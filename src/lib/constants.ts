@@ -106,7 +106,7 @@ export function formatCurrency(amount: number, currency: string = DEFAULT_CURREN
 }
 
 // Format date
-export function formatDate(dateString: string | null): string {
+export function formatDate(dateString?: string | null): string {
   if (!dateString) return '—';
   return new Intl.DateTimeFormat('en-PK', {
     year: 'numeric',
@@ -116,7 +116,7 @@ export function formatDate(dateString: string | null): string {
 }
 
 // Format datetime
-export function formatDateTime(dateString: string | null): string {
+export function formatDateTime(dateString?: string | null): string {
   if (!dateString) return '—';
   return new Intl.DateTimeFormat('en-PK', {
     year: 'numeric',

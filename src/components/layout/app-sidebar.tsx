@@ -26,6 +26,7 @@ import {
   ScrollText,
   ChevronDown,
   Shield,
+  Camera,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -48,9 +49,16 @@ import {
 
 const navigation = [
   {
-    title: 'Dashboard',
+    title: 'HQ Dashboard',
     url: '/',
     icon: LayoutDashboard,
+  },
+  {
+    title: 'Brand Workspaces',
+    icon: Camera,
+    items: [
+      { title: 'The Snap Service', url: '/service', icon: Camera },
+    ],
   },
   {
     title: 'Business',

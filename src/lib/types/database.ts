@@ -563,3 +563,244 @@ export interface BrandPerformance {
   active_projects: number;
   active_leads: number;
 }
+
+// ============================================================
+// THE SNAP SERVICE (PHASE 2 WORKSPACE TYPES)
+// ============================================================
+
+export interface Package {
+  id: UUID;
+  brand_id: UUID | null;
+  name: string;
+  slug: string;
+  price: number;
+  currency: string;
+  badge?: string | null;
+  featured: boolean;
+  image_url?: string | null;
+  features_json: string[];
+  sort_order: number;
+  is_active: boolean;
+  is_archived: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EventFunction {
+  id: UUID;
+  project_id: UUID;
+  event_id?: UUID | null;
+  brand_id: UUID | null;
+  function_name: string;
+  function_type: 'mehndi' | 'barat' | 'walima' | 'reception' | 'nikah' | 'portrait' | 'event';
+  function_date: string;
+  start_time?: string | null;
+  end_time?: string | null;
+  venue: string;
+  city: string;
+  coverage_hours?: number;
+  lead_photographer_id?: UUID | null;
+  lead_cinematographer_id?: UUID | null;
+  status: 'upcoming' | 'in_progress' | 'completed' | 'cancelled' | 'postponed';
+  equipment_needed?: string[];
+  notes?: string | null;
+  is_archived: boolean;
+  created_at: string;
+  updated_at: string;
+  // Joined
+  team_assignments?: EventTeamAssignment[];
+}
+
+export interface QuotationItem {
+  id: UUID;
+  quotation_id: UUID;
+  service_id?: UUID | null;
+  package_id?: UUID | null;
+  function_id?: UUID | null;
+  service_name: string;
+  description?: string | null;
+  unit_price: number;
+  quantity: number;
+  discount_amount: number;
+  total_price: number;
+  sort_order: number;
+  created_at: string;
+}
+
+export type TeamRole =
+  | 'lead_photographer'
+  | 'candid_photographer'
+  | 'traditional_photographer'
+  | 'cinematographer'
+  | 'drone_operator'
+  | 'gimbal_operator'
+  | 'editor'
+  | 'assistant'
+  | 'coordinator';
+
+export interface EventTeamAssignment {
+  id: UUID;
+  project_id: UUID;
+  function_id: UUID;
+  event_id?: UUID | null;
+  brand_id: UUID | null;
+  role: TeamRole;
+  profile_id?: UUID | null;
+  freelancer_id?: UUID | null;
+  person_name: string;
+  call_time?: string | null;
+  end_time?: string | null;
+  location?: string | null;
+  rate_type: 'flat' | 'hourly' | 'daily';
+  agreed_cost: number;
+  is_freelancer: boolean;
+  payment_status: 'unpaid' | 'partially_paid' | 'paid';
+  amount_paid: number;
+  paid_at?: string | null;
+  notes?: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined
+  function?: EventFunction;
+}
+
+export type EventCostCategory =
+  | 'photographer'
+  | 'videographer'
+  | 'drone'
+  | 'freelancer'
+  | 'travel'
+  | 'accommodation'
+  | 'food'
+  | 'album_printing'
+  | 'equipment_rental'
+  | 'editing'
+  | 'other';
+
+export interface EventCost {
+  id: UUID;
+  project_id: UUID;
+  function_id?: UUID | null;
+  brand_id: UUID | null;
+  category: EventCostCategory;
+  description: string;
+  amount: number;
+  currency: string;
+  vendor_name?: string | null;
+  assignment_id?: UUID | null;
+  freelancer_id?: UUID | null;
+  expense_id?: UUID | null;
+  transaction_id?: UUID | null;
+  payment_status: 'pending' | 'paid' | 'reimbursed';
+  receipt_url?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type EditingStatus =
+  | 'not_started'
+  | 'files_received'
+  | 'editing_assigned'
+  | 'in_progress'
+  | 'internal_review'
+  | 'client_proof'
+  | 'revision'
+  | 'approved'
+  | 'final_export'
+  | 'delivered';
+
+export interface EditingTask {
+  id: UUID;
+  project_id: UUID;
+  function_id?: UUID | null;
+  brand_id: UUID | null;
+  title: string;
+  deliverable_type: string;
+  editor_id?: UUID | null;
+  editor_name?: string | null;
+  assigned_date?: string | null;
+  deadline: string;
+  status: EditingStatus;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  revision_count: number;
+  delivery_url?: string | null;
+  notes?: string | null;
+  completed_at?: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined
+  project_name?: string;
+  client_name?: string;
+}
+
+export interface EventDeliverable {
+  id: UUID;
+  project_id: UUID;
+  function_id?: UUID | null;
+  brand_id: UUID | null;
+  title: string;
+  type: 'edited_photos' | 'highlight_film' | 'full_video' | 'teaser' | 'reel' | 'album' | 'prints' | 'client_gallery' | 'raw_footage';
+  storage_reference?: string | null;
+  item_count?: number | null;
+  status: 'pending' | 'in_production' | 'review' | 'ready_for_delivery' | 'delivered';
+  deadline?: string | null;
+  delivered_at?: string | null;
+  delivered_to?: string | null;
+  notes?: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined
+  project_name?: string;
+}
+
+export interface AlbumOrder {
+  id: UUID;
+  project_id: UUID;
+  client_id?: UUID | null;
+  brand_id: UUID | null;
+  album_title: string;
+  album_size: '12x18' | '12x24' | '12x30' | '12x36' | '14x40' | 'custom';
+  cover_type: 'leather' | 'acrylic_glass' | 'velvet' | 'linen' | 'hardcover';
+  pages_count: number;
+  photos_selected_count: number;
+  designer_id?: UUID | null;
+  printing_vendor?: string | null;
+  printing_cost: number;
+  selling_price: number;
+  status: 'pending_selection' | 'selection_received' | 'designing' | 'client_review' | 'revision' | 'approved' | 'printing' | 'ready' | 'delivered';
+  proof_url?: string | null;
+  delivery_date?: string | null;
+  notes?: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined
+  client?: Client;
+  project?: Project;
+}
+
+export interface ServiceDashboardStats {
+  contracted_revenue: number;
+  received_revenue: number;
+  outstanding_revenue: number;
+  total_event_costs: number;
+  gross_profit: number;
+  profit_margin: number;
+  active_weddings: number;
+  upcoming_functions_this_week: number;
+  pending_edits: number;
+  pending_albums: number;
+  new_leads: number;
+  confirmed_events: number;
+}
+
+export interface TeamConflict {
+  person_name: string;
+  date: string;
+  conflicting_functions: {
+    function_id: string;
+    function_name: string;
+    project_name: string;
+    time_window: string;
+    role: string;
+  }[];
+}

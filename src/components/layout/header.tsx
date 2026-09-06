@@ -13,7 +13,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Camera, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 interface HeaderProps {
   user: {
@@ -39,6 +40,19 @@ export function Header({ user }: HeaderProps) {
         <Separator orientation="vertical" className="h-5 bg-neutral-800" />
         <span className="text-sm text-neutral-500 hidden sm:block">The Snap Legacy HQ</span>
       </div>
+
+      <div className="flex items-center gap-3">
+        <Button
+          variant="outline"
+          size="sm"
+          render={<Link href="/service" />}
+          className="h-8 text-xs border-blue-500/40 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 font-medium"
+        >
+          <Camera className="w-3.5 h-3.5 text-blue-400" />
+          <span className="hidden sm:inline">The Snap Service Workspace</span>
+          <span className="sm:hidden">Service</span>
+          <ArrowRight className="w-3 h-3 ml-0.5 opacity-70" />
+        </Button>
 
       <DropdownMenu>
         <DropdownMenuTrigger
@@ -78,6 +92,7 @@ export function Header({ user }: HeaderProps) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      </div>
     </header>
   );
 }

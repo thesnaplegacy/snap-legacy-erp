@@ -10,10 +10,14 @@ export async function middleware(request: NextRequest) {
     const isLoginPage = request.nextUrl.pathname === '/login';
     const isAuthCallback = request.nextUrl.pathname === '/auth/callback';
 
-    // If authenticated in demo mode and visiting /login, redirect to dashboard
+    // Support service.thesnaplegacy.com subdomain routing
+    const host = request.headers.get('host') || '';
+    const isServiceSubdomain = host.startsWith('service.') || host.includes('service.thesnaplegacy');
+
+    // If authenticated in demo mode and visiting /login, redirect to dashboard or service
     if (hasSession && isLoginPage) {
       const url = request.nextUrl.clone();
-      url.pathname = '/';
+      url.pathname = isServiceSubdomain ? '/service' : '/';
       return NextResponse.redirect(url);
     }
 
@@ -22,6 +26,13 @@ export async function middleware(request: NextRequest) {
       const url = request.nextUrl.clone();
       url.pathname = '/login';
       return NextResponse.redirect(url);
+    }
+
+    // Subdomain rewrite: service.thesnaplegacy.com/* -> /service/*
+    if (isServiceSubdomain && !request.nextUrl.pathname.startsWith('/service') && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/auth')) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/service${request.nextUrl.pathname === '/' ? '' : request.nextUrl.pathname}`;
+      return NextResponse.rewrite(url);
     }
 
     return NextResponse.next({ request });
