@@ -26,6 +26,8 @@ import {
   Building2,
 } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardPage() {
   const [stats, brandPerformance, recentTx, events, projects, payments, leads] =
     await Promise.all([

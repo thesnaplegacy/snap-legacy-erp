@@ -145,6 +145,69 @@ export function createMockSupabaseClient(): any {
         isSingle = true;
         return builder;
       },
+      gte(column: string, value: any) {
+        data = data.filter((item) => {
+          if (item && typeof item === 'object' && column in item) {
+            return item[column] >= value;
+          }
+          return true;
+        });
+        return builder;
+      },
+      lte(column: string, value: any) {
+        data = data.filter((item) => {
+          if (item && typeof item === 'object' && column in item) {
+            return item[column] <= value;
+          }
+          return true;
+        });
+        return builder;
+      },
+      gt(column: string, value: any) {
+        data = data.filter((item) => {
+          if (item && typeof item === 'object' && column in item) {
+            return item[column] > value;
+          }
+          return true;
+        });
+        return builder;
+      },
+      lt(column: string, value: any) {
+        data = data.filter((item) => {
+          if (item && typeof item === 'object' && column in item) {
+            return item[column] < value;
+          }
+          return true;
+        });
+        return builder;
+      },
+      like(column: string, _pattern: string) {
+        return builder;
+      },
+      ilike(column: string, _pattern: string) {
+        return builder;
+      },
+      contains(column: string, _value: any) {
+        return builder;
+      },
+      containedBy(column: string, _value: any) {
+        return builder;
+      },
+      not(column: string, _operator: string, _value: any) {
+        return builder;
+      },
+      is(column: string, value: any) {
+        data = data.filter((item) => {
+          if (item && typeof item === 'object' && column in item) {
+            return item[column] === value;
+          }
+          return true;
+        });
+        return builder;
+      },
+      textSearch(_column: string, _query: string) {
+        return builder;
+      },
       filter() {
         return builder;
       },

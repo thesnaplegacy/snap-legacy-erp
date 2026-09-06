@@ -4,6 +4,8 @@ import { Header } from '@/components/layout/header';
 import { getCurrentUser } from '@/lib/auth/permissions';
 import { redirect } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardLayout({
   children,
 }: {

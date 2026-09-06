@@ -4,7 +4,15 @@ import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser, hasPermission } from '@/lib/auth/permissions';
 import { createAuditLog } from './audit';
 import type { DashboardStats, BrandPerformance } from '@/lib/types/database';
-import { DEMO_DASHBOARD_STATS, DEMO_BRAND_PERFORMANCE } from '@/lib/demo-data';
+import {
+  DEMO_DASHBOARD_STATS,
+  DEMO_BRAND_PERFORMANCE,
+  DEMO_TRANSACTIONS,
+  DEMO_EVENTS,
+  DEMO_PROJECTS,
+  DEMO_PAYMENTS,
+  DEMO_LEADS,
+} from '@/lib/demo-data';
 
 // ============================================================
 // DASHBOARD DATA
@@ -144,6 +152,9 @@ export async function getBrandPerformance(): Promise<BrandPerformance[]> {
 }
 
 export async function getRecentTransactions(limit: number = 5) {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE !== 'false') {
+    return (DEMO_TRANSACTIONS as any[]).slice(0, limit);
+  }
   const supabase = await createClient();
   const { data } = await supabase
     .from('financial_transactions')
@@ -154,6 +165,9 @@ export async function getRecentTransactions(limit: number = 5) {
 }
 
 export async function getUpcomingEvents(limit: number = 5) {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE !== 'false') {
+    return (DEMO_EVENTS as any[]).slice(0, limit);
+  }
   const supabase = await createClient();
   const { data } = await supabase
     .from('events')
@@ -167,6 +181,9 @@ export async function getUpcomingEvents(limit: number = 5) {
 }
 
 export async function getActiveProjects(limit: number = 5) {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE !== 'false') {
+    return (DEMO_PROJECTS as any[]).slice(0, limit);
+  }
   const supabase = await createClient();
   const { data } = await supabase
     .from('projects')
@@ -179,6 +196,9 @@ export async function getActiveProjects(limit: number = 5) {
 }
 
 export async function getOutstandingPayments(limit: number = 5) {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE !== 'false') {
+    return (DEMO_PAYMENTS as any[]).slice(0, limit);
+  }
   const supabase = await createClient();
   const { data } = await supabase
     .from('payments')
@@ -191,6 +211,9 @@ export async function getOutstandingPayments(limit: number = 5) {
 }
 
 export async function getRecentLeads(limit: number = 5) {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE !== 'false') {
+    return (DEMO_LEADS as any[]).slice(0, limit);
+  }
   const supabase = await createClient();
   const { data } = await supabase
     .from('leads')
