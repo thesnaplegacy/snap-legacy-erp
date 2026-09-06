@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, Loader2, Sparkles, ArrowRight } from 'lucide-react';
 
-const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE !== 'false';
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);

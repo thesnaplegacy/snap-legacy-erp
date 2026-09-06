@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 
-const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE !== 'false';
 
 export async function signInWithEmail(formData: FormData) {
   if (IS_DEMO) {

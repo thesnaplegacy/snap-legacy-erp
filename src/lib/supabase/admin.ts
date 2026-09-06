@@ -8,7 +8,7 @@ import { createMockSupabaseClient } from '@/lib/supabase/mock-client';
  * NEVER import this in client components.
  */
 export function createAdminClient() {
-  if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE !== 'false') {
     return createMockSupabaseClient();
   }
 

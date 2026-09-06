@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { createMockSupabaseClient } from '@/lib/supabase/mock-client';
 
 export async function createClient() {
-  if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE !== 'false') {
     return createMockSupabaseClient() as unknown as ReturnType<typeof createServerClient>;
   }
 

@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE !== 'false';
 
 export async function middleware(request: NextRequest) {
   // In demo mode, use lightweight demo_session cookie auth to bypass Supabase SSR

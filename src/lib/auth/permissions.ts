@@ -8,7 +8,7 @@ import { DEMO_USER } from '@/lib/demo-data';
  * Always call server-side.
  */
 export async function getCurrentUser(): Promise<UserWithDetails | null> {
-  if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE !== 'false') {
     return DEMO_USER;
   }
 

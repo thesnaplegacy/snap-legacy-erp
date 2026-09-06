@@ -11,7 +11,7 @@ import { DEMO_DASHBOARD_STATS, DEMO_BRAND_PERFORMANCE } from '@/lib/demo-data';
 // ============================================================
 
 export async function getDashboardStats(): Promise<DashboardStats> {
-  if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE !== 'false') {
     return DEMO_DASHBOARD_STATS;
   }
 
@@ -85,7 +85,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 }
 
 export async function getBrandPerformance(): Promise<BrandPerformance[]> {
-  if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE !== 'false') {
     return DEMO_BRAND_PERFORMANCE;
   }
 
