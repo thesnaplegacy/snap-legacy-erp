@@ -27,6 +27,7 @@ import {
   ChevronDown,
   Shield,
   Camera,
+  Sparkles,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -58,6 +59,7 @@ const navigation = [
     icon: Camera,
     items: [
       { title: 'The Snap Service', url: '/service', icon: Camera },
+      { title: 'The Snap Agency', url: '/agency', icon: Sparkles },
     ],
   },
   {
