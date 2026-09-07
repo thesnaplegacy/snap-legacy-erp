@@ -8,6 +8,15 @@
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- Ensure updated_at trigger function exists
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 -- 1. AGENCY SERVICES
 CREATE TABLE IF NOT EXISTS agency_services (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -438,3 +447,83 @@ BEGIN
   END LOOP;
 END;
 $$;
+
+-- ============================================================
+-- 15. ROW LEVEL SECURITY (RLS) POLICIES FOR AGENCY TABLES
+-- ============================================================
+
+-- Enable RLS on all agency tables
+ALTER TABLE agency_services ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_packages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_package_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_client_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_discovery_records ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_quotation_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_proposals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_projects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_retainers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_retainer_cycles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_campaigns ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_content_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_creative_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_approvals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_deliverables ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agency_expenses ENABLE ROW LEVEL SECURITY;
+
+-- Brand-scoped policies for direct brand_id tables
+DO $$
+DECLARE
+  tbl TEXT;
+BEGIN
+  FOR tbl IN
+    SELECT unnest(ARRAY[
+      'agency_services', 'agency_packages', 'agency_client_profiles',
+      'agency_discovery_records', 'agency_proposals', 'agency_projects',
+      'agency_retainers', 'agency_retainer_cycles', 'agency_campaigns',
+      'agency_content_items', 'agency_creative_tasks', 'agency_deliverables',
+      'agency_expenses'
+    ])
+  LOOP
+    EXECUTE format('
+      CREATE POLICY "Brand-scoped select on %I" ON %I FOR SELECT TO authenticated
+        USING (is_super_admin(auth.uid()) OR brand_id IN (SELECT get_user_brand_ids(auth.uid())));
+      CREATE POLICY "Brand-scoped insert on %I" ON %I FOR INSERT TO authenticated
+        WITH CHECK (is_super_admin(auth.uid()) OR brand_id IN (SELECT get_user_brand_ids(auth.uid())));
+      CREATE POLICY "Brand-scoped update on %I" ON %I FOR UPDATE TO authenticated
+        USING (is_super_admin(auth.uid()) OR brand_id IN (SELECT get_user_brand_ids(auth.uid())));
+      CREATE POLICY "Brand-scoped delete on %I" ON %I FOR DELETE TO authenticated
+        USING (is_super_admin(auth.uid()) OR brand_id IN (SELECT get_user_brand_ids(auth.uid())));
+    ', tbl, tbl, tbl, tbl, tbl, tbl, tbl, tbl);
+  END LOOP;
+END;
+$$;
+
+-- Relational RLS policies for package items and quotation items
+CREATE POLICY "Brand-scoped select on agency_package_items" ON agency_package_items FOR SELECT TO authenticated
+  USING (is_super_admin(auth.uid()) OR package_id IN (SELECT id FROM agency_packages WHERE brand_id IN (SELECT get_user_brand_ids(auth.uid()))));
+CREATE POLICY "Brand-scoped insert on agency_package_items" ON agency_package_items FOR INSERT TO authenticated
+  WITH CHECK (is_super_admin(auth.uid()) OR package_id IN (SELECT id FROM agency_packages WHERE brand_id IN (SELECT get_user_brand_ids(auth.uid()))));
+CREATE POLICY "Brand-scoped update on agency_package_items" ON agency_package_items FOR UPDATE TO authenticated
+  USING (is_super_admin(auth.uid()) OR package_id IN (SELECT id FROM agency_packages WHERE brand_id IN (SELECT get_user_brand_ids(auth.uid()))));
+CREATE POLICY "Brand-scoped delete on agency_package_items" ON agency_package_items FOR DELETE TO authenticated
+  USING (is_super_admin(auth.uid()) OR package_id IN (SELECT id FROM agency_packages WHERE brand_id IN (SELECT get_user_brand_ids(auth.uid()))));
+
+CREATE POLICY "Brand-scoped select on agency_quotation_items" ON agency_quotation_items FOR SELECT TO authenticated
+  USING (is_super_admin(auth.uid()) OR quotation_id IN (SELECT id FROM quotations WHERE brand_id IN (SELECT get_user_brand_ids(auth.uid()))));
+CREATE POLICY "Brand-scoped insert on agency_quotation_items" ON agency_quotation_items FOR INSERT TO authenticated
+  WITH CHECK (is_super_admin(auth.uid()) OR quotation_id IN (SELECT id FROM quotations WHERE brand_id IN (SELECT get_user_brand_ids(auth.uid()))));
+CREATE POLICY "Brand-scoped update on agency_quotation_items" ON agency_quotation_items FOR UPDATE TO authenticated
+  USING (is_super_admin(auth.uid()) OR quotation_id IN (SELECT id FROM quotations WHERE brand_id IN (SELECT get_user_brand_ids(auth.uid()))));
+CREATE POLICY "Brand-scoped delete on agency_quotation_items" ON agency_quotation_items FOR DELETE TO authenticated
+  USING (is_super_admin(auth.uid()) OR quotation_id IN (SELECT id FROM quotations WHERE brand_id IN (SELECT get_user_brand_ids(auth.uid()))));
+
+-- Approvals: brand-scoped for authenticated users, token-scoped for public client review
+CREATE POLICY "Brand-scoped access on agency_approvals" ON agency_approvals FOR ALL TO authenticated
+  USING (is_super_admin(auth.uid()) OR brand_id IN (SELECT get_user_brand_ids(auth.uid())));
+
+CREATE POLICY "Public token access on agency_approvals" ON agency_approvals FOR SELECT TO anon
+  USING (approval_token IS NOT NULL);
+
+CREATE POLICY "Public token update on agency_approvals" ON agency_approvals FOR UPDATE TO anon
+  USING (approval_token IS NOT NULL);
+

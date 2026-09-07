@@ -88,11 +88,30 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Support service.thesnaplegacy.com and agency.thesnaplegacy.com subdomain routing
+  const host = request.headers.get('host') || '';
+  const isServiceSubdomain = host.startsWith('service.') || host.includes('service.thesnaplegacy');
+  const isAgencySubdomain = host.startsWith('agency.') || host.includes('agency.thesnaplegacy');
+
   // Redirect authenticated users away from login page
   if (user && isLoginPage) {
     const url = request.nextUrl.clone();
-    url.pathname = '/';
+    url.pathname = isServiceSubdomain ? '/service' : isAgencySubdomain ? '/agency' : '/';
     return NextResponse.redirect(url);
+  }
+
+  // Subdomain rewrite: service.thesnaplegacy.com/* -> /service/*
+  if (isServiceSubdomain && !request.nextUrl.pathname.startsWith('/service') && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/auth')) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/service${request.nextUrl.pathname === '/' ? '' : request.nextUrl.pathname}`;
+    return NextResponse.rewrite(url, { headers: supabaseResponse.headers });
+  }
+
+  // Subdomain rewrite: agency.thesnaplegacy.com/* -> /agency/*
+  if (isAgencySubdomain && !request.nextUrl.pathname.startsWith('/agency') && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/auth')) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/agency${request.nextUrl.pathname === '/' ? '' : request.nextUrl.pathname}`;
+    return NextResponse.rewrite(url, { headers: supabaseResponse.headers });
   }
 
   return supabaseResponse;

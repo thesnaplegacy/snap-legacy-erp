@@ -851,14 +851,15 @@ export async function recordAgencyPayment(params: {
     if (IS_DEMO) return { success: true };
 
     const supabase = await createClient();
+    const refKey = params.reference || params.idempotencyKey;
 
-    // 1. Check idempotency if reference provided
-    if (params.reference) {
+    // 1. Check idempotency if reference or idempotency key provided
+    if (refKey) {
       const { data: existing } = await supabase
         .from('payments')
         .select('id')
         .eq('brand_id', AGENCY_BRAND_ID)
-        .eq('reference', params.reference)
+        .eq('reference', refKey)
         .maybeSingle();
 
       if (existing) {
@@ -876,7 +877,7 @@ export async function recordAgencyPayment(params: {
         currency: 'PKR',
         date: new Date().toISOString().split('T')[0],
         description: `Agency Client Payment — ${params.notes || 'Creative services'}`,
-        reference: params.reference || null,
+        reference: refKey || null,
         client_id: params.clientId,
         project_id: params.projectId || null,
         created_by: user.id,
@@ -899,7 +900,7 @@ export async function recordAgencyPayment(params: {
         method: params.paymentMethod,
         date: new Date().toISOString().split('T')[0],
         status: 'paid',
-        reference: params.reference || null,
+        reference: refKey || null,
         notes: params.notes || null,
         created_by: user.id,
       })
