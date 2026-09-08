@@ -1295,3 +1295,485 @@ export interface AgencyProjectProfitability {
   }[];
 }
 
+// ============================================================
+// PHASE 4: SNAP MEMORIES STUDIO TYPES
+// ============================================================
+
+export type MemoriesSessionType =
+  | 'Newborn'
+  | 'Baby Milestone'
+  | 'Cake Smash'
+  | 'Birthday'
+  | 'Family'
+  | 'Anniversary'
+  | 'Special Moments'
+  | 'Lifestyle'
+  | 'Custom Session';
+
+export interface MemoriesService {
+  id: UUID;
+  brand_id: UUID;
+  name: string;
+  slug: string;
+  category: MemoriesSessionType;
+  description?: string | null;
+  session_duration_minutes: number;
+  included_photos: number;
+  default_price: number;
+  currency: string;
+  pricing_type: 'fixed' | 'custom' | 'package';
+  is_active: boolean;
+  is_archived: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MemoriesPackage {
+  id: UUID;
+  brand_id: UUID;
+  name: string;
+  slug: string;
+  session_type: MemoriesSessionType;
+  description?: string | null;
+  base_price: number;
+  currency: string;
+  duration_minutes: number;
+  included_photos: number;
+  included_reels: number;
+  prints_included?: string | null;
+  frames_included?: string | null;
+  album_included?: string | null;
+  badge?: string | null;
+  sort_order: number;
+  is_active: boolean;
+  is_archived: boolean;
+  created_at: string;
+  updated_at: string;
+  items?: MemoriesPackageItem[];
+}
+
+export interface MemoriesPackageItem {
+  id: UUID;
+  package_id: UUID;
+  service_id?: UUID | null;
+  item_type: 'session_time' | 'retouched_photos' | 'reel' | 'print' | 'frame' | 'album' | 'add_on';
+  name: string;
+  quantity: number;
+  unit_price: number;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface ChildInfo {
+  name: string;
+  birth_date?: string;
+  gender?: 'male' | 'female' | 'other';
+  notes?: string;
+}
+
+export interface MemoriesClientProfile {
+  id: UUID;
+  client_id: UUID;
+  brand_id: UUID;
+  family_name?: string | null;
+  children_info: ChildInfo[];
+  anniversary_date?: string | null;
+  preferred_photographer_id?: UUID | null;
+  special_instructions?: string | null;
+  allergies_or_sensitivities?: string | null;
+  status: 'active' | 'inactive' | 'vip';
+  notes?: string | null;
+  created_at: string;
+  updated_at: string;
+  client?: Client;
+}
+
+export type MemoriesLeadStatus =
+  | 'NEW'
+  | 'CONTACTED'
+  | 'QUALIFIED'
+  | 'QUOTE_SENT'
+  | 'FOLLOW_UP'
+  | 'CONVERTED'
+  | 'LOST';
+
+export interface MemoriesLead {
+  id: UUID;
+  brand_id: UUID;
+  name: string;
+  phone: string;
+  email?: string | null;
+  source: 'Website' | 'WhatsApp' | 'Instagram' | 'Facebook' | 'Referral' | 'Google' | 'Walk-in' | 'Repeat Client' | 'Other';
+  service_interest: MemoriesSessionType;
+  preferred_session_date?: string | null;
+  preferred_time?: string | null;
+  child_name?: string | null;
+  child_age_or_milestone?: string | null;
+  budget?: number | null;
+  notes?: string | null;
+  assigned_staff_id?: UUID | null;
+  status: MemoriesLeadStatus;
+  converted_client_id?: UUID | null;
+  lost_reason?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type MemoriesShootDayStatus =
+  | 'Scheduled'
+  | 'Team Ready'
+  | 'Client Arrived'
+  | 'Shoot Started'
+  | 'Shoot Completed';
+
+export interface PreShootChecklist {
+  equipment_ready: boolean;
+  studio_ready: boolean;
+  props_ready: boolean;
+  client_contacted: boolean;
+  session_requirements_confirmed: boolean;
+  team_checked_in: boolean;
+  files_backed_up: boolean;
+}
+
+export interface MemoriesSession {
+  id: UUID;
+  project_id?: UUID | null;
+  client_id: UUID;
+  brand_id: UUID;
+  package_id?: UUID | null;
+  quote_id?: UUID | null;
+  title: string;
+  session_type: MemoriesSessionType;
+  session_date: string;
+  start_time: string;
+  end_time: string;
+  location: string;
+  studio_room?: string | null;
+  assigned_photographer_id?: UUID | null;
+  assigned_assistant_id?: UUID | null;
+  assigned_editor_id?: UUID | null;
+  booking_status: 'hold' | 'confirmed' | 'released' | 'expired' | 'cancelled';
+  shoot_day_status: MemoriesShootDayStatus;
+  status: 'scheduled' | 'in_progress' | 'completed' | 'in_editing' | 'delivered' | 'cancelled';
+  pre_shoot_checklist: PreShootChecklist;
+  child_info?: string | null;
+  shoot_day_notes?: string | null;
+  completed_at?: string | null;
+  created_at: string;
+  updated_at: string;
+  client?: Client;
+  package?: MemoriesPackage;
+  assigned_photographer?: { id: UUID; full_name: string; email: string };
+  assigned_editor?: { id: UUID; full_name: string; email: string };
+}
+
+export interface MemoriesBookingHold {
+  id: UUID;
+  session_id: UUID;
+  brand_id: UUID;
+  client_id: UUID;
+  photographer_id?: UUID | null;
+  hold_date: string;
+  start_time: string;
+  end_time: string;
+  deposit_required: number;
+  expires_at: string;
+  status: 'hold' | 'confirmed' | 'released' | 'expired';
+  created_at: string;
+  client?: Client;
+}
+
+export type MemoriesQuoteStatus =
+  | 'draft'
+  | 'sent'
+  | 'viewed'
+  | 'accepted'
+  | 'rejected'
+  | 'expired'
+  | 'cancelled';
+
+export interface MemoriesQuote {
+  id: UUID;
+  brand_id: UUID;
+  client_id: UUID;
+  session_id?: UUID | null;
+  quote_number: string;
+  access_key: string;
+  session_type: MemoriesSessionType;
+  package_id?: UUID | null;
+  subtotal: number;
+  discount: number;
+  tax_amount: number;
+  total_amount: number;
+  deposit_required: number;
+  balance_due: number;
+  valid_until: string;
+  status: MemoriesQuoteStatus;
+  client_notes?: string | null;
+  internal_notes?: string | null;
+  sent_at?: string | null;
+  viewed_at?: string | null;
+  accepted_at?: string | null;
+  client_signature?: string | null;
+  created_by?: UUID | null;
+  created_at: string;
+  updated_at: string;
+  client?: Client;
+  package?: MemoriesPackage;
+  items?: MemoriesQuoteItem[];
+}
+
+export interface MemoriesQuoteItem {
+  id: UUID;
+  quote_id: UUID;
+  service_name: string;
+  description?: string | null;
+  quantity: number;
+  unit_price: number;
+  discount_amount: number;
+  total_price: number;
+  included_photos: number;
+  included_prints: number;
+  sort_order: number;
+  created_at: string;
+}
+
+export type MemoriesGalleryStatus =
+  | 'draft'
+  | 'delivered_for_selection'
+  | 'selection_completed'
+  | 'editing_in_progress'
+  | 'final_delivered';
+
+export interface MemoriesGallery {
+  id: UUID;
+  session_id: UUID;
+  client_id: UUID;
+  brand_id: UUID;
+  title: string;
+  access_code: string;
+  cover_image_url?: string | null;
+  total_photos: number;
+  max_selections: number;
+  selection_deadline?: string | null;
+  status: MemoriesGalleryStatus;
+  storage_bucket: string;
+  storage_folder_path: string;
+  views_count: number;
+  client_notified_at?: string | null;
+  created_at: string;
+  updated_at: string;
+  client?: Client;
+  session?: MemoriesSession;
+}
+
+export interface MemoriesSelection {
+  id: UUID;
+  gallery_id: UUID;
+  client_id: UUID;
+  brand_id: UUID;
+  selected_photos: string[];
+  client_feedback?: string | null;
+  additional_photos_purchased: number;
+  submitted_at: string;
+  created_at: string;
+  client?: Client;
+}
+
+export type MemoriesEditingStatus =
+  | 'not_started'
+  | 'files_received'
+  | 'selecting'
+  | 'editing'
+  | 'in_review'
+  | 'revision'
+  | 'approved'
+  | 'ready_for_delivery'
+  | 'delivered';
+
+export interface MemoriesEditingPipeline {
+  id: UUID;
+  session_id: UUID;
+  gallery_id?: UUID | null;
+  brand_id: UUID;
+  editor_id?: UUID | null;
+  status: MemoriesEditingStatus;
+  photos_count: number;
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  due_date: string;
+  revision_count: number;
+  notes?: string | null;
+  completed_at?: string | null;
+  created_at: string;
+  updated_at: string;
+  session?: MemoriesSession;
+  editor?: { id: UUID; full_name: string; email: string };
+}
+
+export interface MemoriesDeliverable {
+  id: UUID;
+  session_id: UUID;
+  brand_id: UUID;
+  client_id: UUID;
+  title: string;
+  deliverable_type:
+    | 'High-Res Photos'
+    | 'Web-Size Photos'
+    | 'Reel Video'
+    | 'Print Files'
+    | 'Album Layout'
+    | 'Heirloom Frame Master';
+  version: string;
+  storage_provider: string;
+  bucket: string;
+  object_key: string;
+  file_name: string;
+  mime_type?: string | null;
+  file_size?: number | null;
+  download_url?: string | null;
+  is_downloadable: boolean;
+  delivered_at?: string | null;
+  created_at: string;
+  client?: Client;
+}
+
+export interface MemoriesTask {
+  id: UUID;
+  brand_id: UUID;
+  title: string;
+  description?: string | null;
+  assigned_to?: UUID | null;
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  status: 'todo' | 'in_progress' | 'completed' | 'cancelled';
+  due_date: string;
+  entity_type?: 'lead' | 'client' | 'quote' | 'session' | 'gallery' | 'editing' | 'delivery' | null;
+  entity_id?: UUID | null;
+  automation_key?: string | null;
+  created_by?: UUID | null;
+  completed_at?: string | null;
+  created_at: string;
+  updated_at: string;
+  assignee?: { id: UUID; full_name: string };
+}
+
+export interface MemoriesReminder {
+  id: UUID;
+  session_id: UUID;
+  client_id: UUID;
+  brand_id: UUID;
+  reminder_type: '7_days_before' | '3_days_before' | '1_day_before' | 'post_delivery';
+  scheduled_for: string;
+  status: 'upcoming' | 'due_today' | 'sent' | 'skipped' | 'failed';
+  message: string;
+  sent_at?: string | null;
+  created_at: string;
+  client?: Client;
+  session?: MemoriesSession;
+}
+
+export interface MemoriesCommunication {
+  id: UUID;
+  client_id: UUID;
+  brand_id: UUID;
+  entity_type?: 'lead' | 'session' | 'quote' | 'gallery' | 'delivery' | null;
+  entity_id?: UUID | null;
+  communication_type:
+    | 'whatsapp'
+    | 'email'
+    | 'phone'
+    | 'quote'
+    | 'booking_confirmation'
+    | 'reminder'
+    | 'gallery'
+    | 'selection'
+    | 'delivery'
+    | 'review'
+    | 'internal_note';
+  direction: 'inbound' | 'outbound' | 'system';
+  message: string;
+  staff_user_id?: UUID | null;
+  status: 'draft' | 'sent' | 'delivered' | 'read' | 'failed';
+  created_at: string;
+  client?: Client;
+}
+
+export interface MemoriesAutomationEvent {
+  id: UUID;
+  automation_key: string;
+  automation_type: string;
+  entity_type: string;
+  entity_id: UUID;
+  status: 'executed' | 'failed' | 'skipped';
+  result?: Record<string, unknown>;
+  executed_at: string;
+}
+
+export interface MemoriesExpense {
+  id: UUID;
+  brand_id: UUID;
+  session_id?: UUID | null;
+  transaction_id?: UUID | null;
+  category:
+    | 'Studio Props & Sets'
+    | 'Cake & Edibles'
+    | 'Outfits & Wraps'
+    | 'Freelance Retoucher'
+    | 'Prints & Album Production'
+    | 'Equipment & Studio Rent'
+    | 'Other';
+  description: string;
+  amount: number;
+  currency: string;
+  date: string;
+  vendor?: string | null;
+  status: 'pending' | 'approved' | 'paid';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MemoriesDashboardStats {
+  monthly_revenue: number;
+  outstanding_balance: number;
+  monthly_direct_costs: number;
+  gross_profit: number;
+  gross_margin: number;
+  today_sessions_count: number;
+  upcoming_sessions_count: number;
+  new_leads_count: number;
+  pending_quotes_count: number;
+  pending_selections_count: number;
+  editing_queue_count: number;
+  deliveries_due_count: number;
+  active_booking_holds: number;
+}
+
+export interface MemoriesSessionProfitability {
+  session_id: string;
+  session_title: string;
+  session_type: string;
+  client_name: string;
+  session_date: string;
+  revenue: number;
+  direct_costs: number;
+  gross_profit: number;
+  gross_margin: number;
+  cost_breakdown: {
+    category: string;
+    amount: number;
+  }[];
+}
+
+export interface MemoriesNextAction {
+  id: string;
+  priority: 'urgent' | 'high' | 'normal';
+  title: string;
+  reason: string;
+  client_name: string;
+  entity_type: 'lead' | 'quote' | 'session' | 'gallery' | 'editing' | 'delivery';
+  entity_id: string;
+  action_label: string;
+  action_href: string;
+}
+
+
