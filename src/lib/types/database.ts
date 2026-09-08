@@ -1781,4 +1781,232 @@ export interface MemoriesNextAction {
   action_href: string;
 }
 
+// ============================================================
+// PHASE 5 — CENTRAL FINANCE, REPORTING & EXECUTIVE INTELLIGENCE
+// ============================================================
+
+export type ChartAccountType =
+  | 'asset'
+  | 'liability'
+  | 'equity'
+  | 'revenue'
+  | 'cogs'
+  | 'expense'
+  | 'other_income'
+  | 'other_expense';
+
+export interface ChartOfAccount {
+  id: UUID;
+  organization_id: UUID;
+  account_code: string;
+  account_name: string;
+  account_type: ChartAccountType;
+  account_category: string;
+  description?: string | null;
+  parent_account_id?: UUID | null;
+  currency: string;
+  is_active: boolean;
+  is_reconcilable: boolean;
+  normal_balance: 'debit' | 'credit';
+  current_balance?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface JournalLine {
+  id?: UUID;
+  entry_id?: UUID;
+  account_id: UUID;
+  brand_id?: UUID | null;
+  line_number: number;
+  debit_amount: number;
+  credit_amount: number;
+  memo?: string | null;
+  account?: ChartOfAccount;
+  brand?: Brand;
+}
+
+export interface JournalEntry {
+  id: UUID;
+  organization_id: UUID;
+  entry_number: string;
+  entry_date: string;
+  brand_id?: UUID | null;
+  source_module: 'service' | 'agency' | 'memories' | 'shop' | 'manual' | 'payroll';
+  source_record_id?: string | null;
+  reference?: string | null;
+  description: string;
+  status: 'draft' | 'posted' | 'reversed';
+  total_debit: number;
+  total_credit: number;
+  posted_by?: UUID | null;
+  posted_at: string;
+  created_at: string;
+  updated_at: string;
+  brand?: Brand;
+  lines?: JournalLine[];
+}
+
+export interface BankAccount {
+  id: UUID;
+  organization_id: UUID;
+  account_name: string;
+  account_type: 'cash' | 'bank' | 'payment_gateway' | 'digital_wallet' | 'petty_cash';
+  bank_name?: string | null;
+  account_number?: string | null;
+  iban?: string | null;
+  currency: string;
+  chart_of_account_id?: UUID | null;
+  book_balance: number;
+  statement_balance: number;
+  last_reconciled_at?: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BankReconciliation {
+  id: UUID;
+  bank_account_id: UUID;
+  reconciliation_date: string;
+  statement_start_date: string;
+  statement_end_date: string;
+  statement_starting_balance: number;
+  statement_ending_balance: number;
+  cleared_deposits: number;
+  cleared_withdrawals: number;
+  reconciled_book_balance: number;
+  difference: number;
+  status: 'draft' | 'completed' | 'cancelled';
+  reconciled_by?: UUID | null;
+  completed_at?: string | null;
+  notes?: string | null;
+  created_at: string;
+}
+
+export interface PayableBill {
+  id: UUID;
+  organization_id: UUID;
+  brand_id?: UUID | null;
+  vendor_name: string;
+  vendor_category: 'print_lab' | 'freelance_crew' | 'bakery_props' | 'equipment_rental' | 'ad_spend_platform' | 'studio_landlord' | 'utility_provider' | 'software_saas' | 'other';
+  bill_number?: string | null;
+  bill_date: string;
+  due_date: string;
+  amount: number;
+  amount_paid: number;
+  balance_due: number;
+  currency: string;
+  status: 'unpaid' | 'partially_paid' | 'paid' | 'cancelled';
+  source_record_id?: string | null;
+  notes?: string | null;
+  created_at: string;
+  brand?: Brand;
+}
+
+export interface BrandPnLBreakdown {
+  brand_id: UUID;
+  brand_name: string;
+  brand_color: string;
+  gross_revenue: number;
+  direct_costs: number;
+  gross_profit: number;
+  gross_margin: number;
+  operating_expenses: number;
+  net_operating_profit: number;
+}
+
+export interface ConsolidatedPnL {
+  date_range: string;
+  consolidated: {
+    gross_revenue: number;
+    direct_costs: number;
+    gross_profit: number;
+    gross_margin: number;
+    operating_expenses: number;
+    net_profit: number;
+  };
+  brands: BrandPnLBreakdown[];
+}
+
+export interface RevenueStreamMetric {
+  stream_id: string;
+  stream_name: string;
+  brand_name: string;
+  brand_color: string;
+  amount: number;
+  percentage_of_total: number;
+  transaction_count: number;
+  average_ticket: number;
+}
+
+export interface ExpenseIntelligenceBreakdown {
+  direct_cogs: {
+    total: number;
+    categories: { name: string; amount: number; percentage: number }[];
+  };
+  operating_opex: {
+    total: number;
+    categories: { name: string; amount: number; percentage: number }[];
+  };
+  total_expenses: number;
+}
+
+export interface ReceivablesAgingBucket {
+  bucket_name: 'Current (0-30 Days)' | '31-60 Days' | '61-90 Days' | '90+ Days Overdue';
+  amount: number;
+  count: number;
+  items: {
+    client_name: string;
+    brand_name: string;
+    invoice_or_session: string;
+    date: string;
+    balance_due: number;
+    days_overdue: number;
+  }[];
+}
+
+export interface ExecutiveAlert {
+  id: string;
+  severity: 'critical' | 'warning' | 'info' | 'success';
+  title: string;
+  message: string;
+  action_href?: string;
+  action_label?: string;
+}
+
+export interface ExecutiveIntelligenceRadar {
+  kpis: {
+    total_revenue: number;
+    total_direct_cost: number;
+    gross_profit: number;
+    gross_margin: number;
+    operating_expenses: number;
+    net_profit: number;
+    net_margin: number;
+    cash_in_hand: number;
+    bank_balance: number;
+    total_liquidity: number;
+    accounts_receivable: number;
+    accounts_payable: number;
+    monthly_burn_rate: number;
+    cash_runway_months: number;
+    mom_revenue_growth: number;
+  };
+  best_performing_brand: {
+    brand_name: string;
+    revenue: number;
+    gross_margin: number;
+  };
+  highest_revenue_stream: {
+    stream_name: string;
+    amount: number;
+  };
+  alerts: ExecutiveAlert[];
+  pnl: ConsolidatedPnL;
+  revenue_streams: RevenueStreamMetric[];
+  expense_breakdown: ExpenseIntelligenceBreakdown;
+  aging: ReceivablesAgingBucket[];
+}
+
 

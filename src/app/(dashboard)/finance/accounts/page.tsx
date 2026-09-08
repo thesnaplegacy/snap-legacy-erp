@@ -1,62 +1,31 @@
-import { getAccounts } from '@/actions/finance';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Landmark } from 'lucide-react';
-import { formatCurrency, STATUS_LABELS, STATUS_VARIANTS } from '@/lib/constants';
+import { getCentralChartOfAccounts } from '@/actions/finance-intelligence-actions';
+import { AccountsView } from '@/components/finance/accounts-view';
+import { BookOpen } from 'lucide-react';
+
+export const dynamic = 'force-dynamic';
 
 export default async function AccountsPage() {
-  const accounts = await getAccounts();
+  const accounts = await getCentralChartOfAccounts();
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Accounts</h1>
-        <p className="text-sm text-neutral-500 mt-1">Manage financial accounts — cash, bank, receivables, payables</p>
+    <div className="space-y-6 pb-12">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-neutral-800/80 pb-6">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold tracking-wide bg-amber-500/10 text-amber-400 border border-amber-500/20">
+              CHART OF ACCOUNTS
+            </span>
+            <span className="text-xs text-neutral-500">• 1000 to 7000 Standard Structure</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Chart of Accounts</h1>
+          <p className="text-sm text-neutral-400 mt-1">
+            Standardized financial accounting classification governing all 3 brands and central treasury
+          </p>
+        </div>
       </div>
 
-      {accounts.length === 0 ? (
-        <Card className="border-neutral-800/50 bg-neutral-900/50">
-          <CardContent className="p-12 text-center">
-            <Landmark className="w-12 h-12 text-neutral-700 mx-auto mb-3" />
-            <p className="text-neutral-500">No data available</p>
-            <p className="text-xs text-neutral-600 mt-1">Create your first financial account</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {accounts.map((account) => (
-            <Card key={account.id} className="border-neutral-800/50 bg-neutral-900/50 hover:bg-neutral-900/80 transition-all">
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-semibold text-white">{account.name}</CardTitle>
-                  <Badge variant={STATUS_VARIANTS[account.status] || 'outline'} className="text-xs">
-                    {STATUS_LABELS[account.status] || account.status}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-[10px] capitalize">{account.type.replace('_', ' ')}</Badge>
-                  {account.brand && (
-                    <Badge variant="secondary" className="text-[10px]" style={{ backgroundColor: `${account.brand.color}20`, color: account.brand.color }}>
-                      {account.brand.name}
-                    </Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-neutral-500">Balance</p>
-                    <p className="text-xl font-bold text-white">{formatCurrency(Number(account.balance), account.currency)}</p>
-                  </div>
-                  {account.bank_name && (
-                    <p className="text-xs text-neutral-500">{account.bank_name} {account.account_number ? `• ${account.account_number}` : ''}</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+      <AccountsView initialAccounts={accounts} />
     </div>
   );
 }
