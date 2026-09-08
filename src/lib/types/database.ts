@@ -1434,6 +1434,7 @@ export interface PreShootChecklist {
   session_requirements_confirmed: boolean;
   team_checked_in: boolean;
   files_backed_up: boolean;
+  [key: string]: boolean;
 }
 
 export interface MemoriesSession {
@@ -1459,11 +1460,15 @@ export interface MemoriesSession {
   pre_shoot_checklist: PreShootChecklist;
   child_info?: string | null;
   shoot_day_notes?: string | null;
+  special_notes?: string | null;
+  total_amount?: number;
+  balance_due?: number;
   completed_at?: string | null;
   created_at: string;
   updated_at: string;
   client?: Client;
   package?: MemoriesPackage;
+  lead_photographer?: { id?: UUID; full_name?: string; email?: string };
   assigned_photographer?: { id: UUID; full_name: string; email: string };
   assigned_editor?: { id: UUID; full_name: string; email: string };
 }

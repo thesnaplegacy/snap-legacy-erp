@@ -28,6 +28,7 @@ import {
   Shield,
   Camera,
   Sparkles,
+  Heart,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -60,6 +61,7 @@ const navigation = [
     items: [
       { title: 'The Snap Service', url: '/service', icon: Camera },
       { title: 'The Snap Agency', url: '/agency', icon: Sparkles },
+      { title: 'Snap Memories', url: '/memories', icon: Heart },
     ],
   },
   {
