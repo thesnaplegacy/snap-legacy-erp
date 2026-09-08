@@ -28,7 +28,7 @@ export const BRAND_COLORS: Record<string, string> = {
   'the-snap-legacy': '#C9A84C',
   'the-snap-service': '#3B82F6',
   'the-snap-agency': '#8B5CF6',
-  'snap-memories': '#EC4899',
+  'snap-memories': '#46BBD4',
 };
 
 // Currency

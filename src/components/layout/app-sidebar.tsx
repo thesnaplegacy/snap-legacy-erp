@@ -27,6 +27,8 @@ import {
   ChevronDown,
   Shield,
   Camera,
+  Sparkles,
+  Heart,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -58,6 +60,8 @@ const navigation = [
     icon: Camera,
     items: [
       { title: 'The Snap Service', url: '/service', icon: Camera },
+      { title: 'The Snap Agency', url: '/agency', icon: Sparkles },
+      { title: 'Snap Memories', url: '/memories', icon: Heart },
     ],
   },
   {
@@ -75,11 +79,13 @@ const navigation = [
     icon: DollarSign,
     items: [
       { title: 'Overview', url: '/finance', icon: DollarSign },
-      { title: 'Revenue', url: '/finance/revenue', icon: TrendingUp },
-      { title: 'Expenses', url: '/finance/expenses', icon: TrendingDown },
-      { title: 'Payments', url: '/finance/payments', icon: CreditCard },
-      { title: 'Accounts', url: '/finance/accounts', icon: Landmark },
-      { title: 'Transactions', url: '/finance/transactions', icon: ArrowRightLeft },
+      { title: 'General Ledger', url: '/finance/ledger', icon: ArrowRightLeft },
+      { title: 'Chart of Accounts', url: '/finance/accounts', icon: Landmark },
+      { title: 'Cross-Brand P&L', url: '/finance/pnl', icon: TrendingUp },
+      { title: 'Revenue Intelligence', url: '/finance/revenue-intelligence', icon: CreditCard },
+      { title: 'Expense Intelligence', url: '/finance/expenses', icon: TrendingDown },
+      { title: 'Receivables & Payables', url: '/finance/receivables-aging', icon: FileText },
+      { title: 'Cash & Banking', url: '/finance/banking', icon: Building2 },
     ],
   },
   {
@@ -102,6 +108,7 @@ const navigation = [
     title: 'Reports',
     icon: FileBarChart,
     items: [
+      { title: 'CEO Executive Radar', url: '/reports/executive', icon: TrendingUp },
       { title: 'Business Reports', url: '/reports/business', icon: FileBarChart },
       { title: 'Financial Reports', url: '/reports/financial', icon: FileText },
     ],

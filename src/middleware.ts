@@ -10,19 +10,22 @@ export async function middleware(request: NextRequest) {
     const isLoginPage = request.nextUrl.pathname === '/login';
     const isAuthCallback = request.nextUrl.pathname === '/auth/callback';
 
-    // Support service.thesnaplegacy.com subdomain routing
+    // Support service, agency, and memories subdomain routing
     const host = request.headers.get('host') || '';
     const isServiceSubdomain = host.startsWith('service.') || host.includes('service.thesnaplegacy');
+    const isAgencySubdomain = host.startsWith('agency.') || host.includes('agency.thesnaplegacy');
+    const isMemoriesSubdomain = host.startsWith('memories.') || host.includes('memories.thesnaplegacy');
 
-    // If authenticated in demo mode and visiting /login, redirect to dashboard or service
+    // If authenticated in demo mode and visiting /login, redirect to dashboard or brand workspace
     if (hasSession && isLoginPage) {
       const url = request.nextUrl.clone();
-      url.pathname = isServiceSubdomain ? '/service' : '/';
+      url.pathname = isServiceSubdomain ? '/service' : isAgencySubdomain ? '/agency' : isMemoriesSubdomain ? '/memories' : '/';
       return NextResponse.redirect(url);
     }
 
     // If unauthenticated in demo mode and visiting protected routes, redirect to /login
-    if (!hasSession && !isLoginPage && !isAuthCallback) {
+    // Allow public quote viewing /quote/* without authentication
+    if (!hasSession && !isLoginPage && !isAuthCallback && !request.nextUrl.pathname.startsWith('/quote')) {
       const url = request.nextUrl.clone();
       url.pathname = '/login';
       return NextResponse.redirect(url);
@@ -32,6 +35,20 @@ export async function middleware(request: NextRequest) {
     if (isServiceSubdomain && !request.nextUrl.pathname.startsWith('/service') && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/auth')) {
       const url = request.nextUrl.clone();
       url.pathname = `/service${request.nextUrl.pathname === '/' ? '' : request.nextUrl.pathname}`;
+      return NextResponse.rewrite(url);
+    }
+
+    // Subdomain rewrite: agency.thesnaplegacy.com/* -> /agency/*
+    if (isAgencySubdomain && !request.nextUrl.pathname.startsWith('/agency') && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/auth')) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/agency${request.nextUrl.pathname === '/' ? '' : request.nextUrl.pathname}`;
+      return NextResponse.rewrite(url);
+    }
+
+    // Subdomain rewrite: memories.thesnaplegacy.com/* -> /memories/*
+    if (isMemoriesSubdomain && !request.nextUrl.pathname.startsWith('/memories') && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/auth') && !request.nextUrl.pathname.startsWith('/quote')) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/memories${request.nextUrl.pathname === '/' ? '' : request.nextUrl.pathname}`;
       return NextResponse.rewrite(url);
     }
 
@@ -74,17 +91,44 @@ export async function middleware(request: NextRequest) {
   const isLoginPage = request.nextUrl.pathname === '/login';
   const isAuthCallback = request.nextUrl.pathname === '/auth/callback';
 
-  if (!user && !isLoginPage && !isAuthCallback) {
+  if (!user && !isLoginPage && !isAuthCallback && !request.nextUrl.pathname.startsWith('/quote')) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }
 
+  // Support service, agency, and memories subdomain routing
+  const host = request.headers.get('host') || '';
+  const isServiceSubdomain = host.startsWith('service.') || host.includes('service.thesnaplegacy');
+  const isAgencySubdomain = host.startsWith('agency.') || host.includes('agency.thesnaplegacy');
+  const isMemoriesSubdomain = host.startsWith('memories.') || host.includes('memories.thesnaplegacy');
+
   // Redirect authenticated users away from login page
   if (user && isLoginPage) {
     const url = request.nextUrl.clone();
-    url.pathname = '/';
+    url.pathname = isServiceSubdomain ? '/service' : isAgencySubdomain ? '/agency' : isMemoriesSubdomain ? '/memories' : '/';
     return NextResponse.redirect(url);
+  }
+
+  // Subdomain rewrite: service.thesnaplegacy.com/* -> /service/*
+  if (isServiceSubdomain && !request.nextUrl.pathname.startsWith('/service') && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/auth')) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/service${request.nextUrl.pathname === '/' ? '' : request.nextUrl.pathname}`;
+    return NextResponse.rewrite(url, { headers: supabaseResponse.headers });
+  }
+
+  // Subdomain rewrite: agency.thesnaplegacy.com/* -> /agency/*
+  if (isAgencySubdomain && !request.nextUrl.pathname.startsWith('/agency') && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/auth')) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/agency${request.nextUrl.pathname === '/' ? '' : request.nextUrl.pathname}`;
+    return NextResponse.rewrite(url, { headers: supabaseResponse.headers });
+  }
+
+  // Subdomain rewrite: memories.thesnaplegacy.com/* -> /memories/*
+  if (isMemoriesSubdomain && !request.nextUrl.pathname.startsWith('/memories') && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/auth') && !request.nextUrl.pathname.startsWith('/quote')) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/memories${request.nextUrl.pathname === '/' ? '' : request.nextUrl.pathname}`;
+    return NextResponse.rewrite(url, { headers: supabaseResponse.headers });
   }
 
   return supabaseResponse;
